@@ -17,19 +17,14 @@ namespace KeyVaultTest1
             var builder = new ConfigurationBuilder()
                 .SetBasePath(env.ContentRootPath)
                 .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
-                .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true)
                 .AddEnvironmentVariables();
 
             var config = builder.Build();
 
-            var vault = config["Vault"];
-            var clientId = config["ClientId"];
-            var clientSecret = config["ClientSecret"];
-
-           // builder.AddAzureKeyVault(
-           //     $"https://{config["Vault"]}.vault.azure.net/",
-           //     config["ClientId"],
-           //     config["ClientSecret"]);
+            builder.AddAzureKeyVault(
+            $"https://{config["Vault"]}.vault.azure.net/",
+            config["ClientId"],
+            config["ClientSecret"]);
 
             Configuration = builder.Build();
         }

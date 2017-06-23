@@ -7,6 +7,8 @@ using KeyVaultTest1.Models;
 using System.Security.Cryptography;
 using KeyVaultTest1.Helpers;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Azure.KeyVault;
+using Microsoft.IdentityModel.Clients.ActiveDirectory;
 
 namespace KeyVaultTest1.Controllers
 {
@@ -16,10 +18,21 @@ namespace KeyVaultTest1.Controllers
     public class ValuesController : Controller
     {
 
+
+
         private IConfiguration Configuration { get; set; }
         public ValuesController(IConfiguration configuration)
         {
             Configuration = configuration;
+            var kv = new KeyVaultClient(new KeyVaultClient.AuthenticationCallback(GetToken));
+        }
+
+        private async Task<string> GetToken(string authority, string resource, string scope)
+        {
+            var clientCredentials = new ClientCredential(Configuration["ClientId"], Configuration["ClientSecret"]);
+            var authenticationContext = new AuthenticationContext(authority);
+            var result = await authenticationContext.AcquireTokenAsync(resource, clientCredentials);
+            return result.AccessToken;
         }
 
         // GET api/values
