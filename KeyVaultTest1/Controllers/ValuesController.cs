@@ -3,6 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using KeyVaultTest1.Models;
+using System.Security.Cryptography;
+using KeyVaultTest1.Helpers;
 
 namespace KeyVaultTest1.Controllers
 {
@@ -25,8 +28,18 @@ namespace KeyVaultTest1.Controllers
 
         // POST api/values
         [HttpPost]
-        public void Post([FromBody]string value)
+        public void Post([FromBody]DataDto dataDto)
         {
+            if(dataDto.data.Length > 0)
+            {
+                using (var random = new RNGCryptoServiceProvider())
+                {
+                    var key = new byte[16];
+                    random.GetBytes(key);
+                    byte[] result = Encryption.EncryptStringToBytes_Aes(dataDto.data, key);
+                    string decryptedResult = Encryption.DecryptStringFromBytes_Aes(result, key);
+                }
+            }
         }
 
         // PUT api/values/5
