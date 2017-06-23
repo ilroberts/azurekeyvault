@@ -19,6 +19,18 @@ namespace KeyVaultTest1
                 .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
                 .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true)
                 .AddEnvironmentVariables();
+
+            var config = builder.Build();
+
+            var vault = config["Vault"];
+            var clientId = config["ClientId"];
+            var clientSecret = config["ClientSecret"];
+
+           // builder.AddAzureKeyVault(
+           //     $"https://{config["Vault"]}.vault.azure.net/",
+           //     config["ClientId"],
+           //     config["ClientSecret"]);
+
             Configuration = builder.Build();
         }
 
@@ -29,6 +41,7 @@ namespace KeyVaultTest1
         {
             // Add framework services.
             services.AddMvc();
+            services.AddSingleton<IConfiguration>(Configuration);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

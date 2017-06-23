@@ -6,12 +6,22 @@ using Microsoft.AspNetCore.Mvc;
 using KeyVaultTest1.Models;
 using System.Security.Cryptography;
 using KeyVaultTest1.Helpers;
+using Microsoft.Extensions.Configuration;
 
 namespace KeyVaultTest1.Controllers
 {
+
+
     [Route("api/[controller]")]
     public class ValuesController : Controller
     {
+
+        private IConfiguration Configuration { get; set; }
+        public ValuesController(IConfiguration configuration)
+        {
+            Configuration = configuration;
+        }
+
         // GET api/values
         [HttpGet]
         public IEnumerable<string> Get()
