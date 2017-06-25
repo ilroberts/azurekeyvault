@@ -18,21 +18,17 @@ namespace KeyVaultTest1.Controllers
     public class ValuesController : Controller
     {
 
+        private VaultHelper vh = null;
 
 
         private IConfiguration Configuration { get; set; }
         public ValuesController(IConfiguration configuration)
         {
             Configuration = configuration;
-            var kv = new KeyVaultClient(new KeyVaultClient.AuthenticationCallback(GetToken));
-        }
+            vh = new VaultHelper(Configuration["VaultURL"], Configuration["ClientId"], Configuration["ClientSecret"]);
 
-        private async Task<string> GetToken(string authority, string resource, string scope)
-        {
-            var clientCredentials = new ClientCredential(Configuration["ClientId"], Configuration["ClientSecret"]);
-            var authenticationContext = new AuthenticationContext(authority);
-            var result = await authenticationContext.AcquireTokenAsync(resource, clientCredentials);
-            return result.AccessToken;
+            var secret = vh.GetSecret("myFirstSecret");
+            secret.Wait();
         }
 
         // GET api/values

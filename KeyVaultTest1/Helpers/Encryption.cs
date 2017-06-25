@@ -25,14 +25,12 @@ namespace KeyVaultTest1.Helpers
 
                 var encryptor = aesAlg.CreateEncryptor(aesAlg.Key, aesAlg.IV);
 
-                // Create the streams used for encryption. 
                 using (var msEncrypt = new MemoryStream())
                 {
                     using (var csEncrypt = new CryptoStream(msEncrypt, encryptor, CryptoStreamMode.Write))
                     {
                         using (var swEncrypt = new StreamWriter(csEncrypt))
                         {
-                            //Write all data to the stream.
                             swEncrypt.Write(plainText);
                         }
                         encrypted = msEncrypt.ToArray();
@@ -44,20 +42,14 @@ namespace KeyVaultTest1.Helpers
             Array.Copy(IV, 0, combinedIvCt, 0, IV.Length);
             Array.Copy(encrypted, 0, combinedIvCt, IV.Length, encrypted.Length);
 
-            // Return the encrypted bytes from the memory stream. 
             return combinedIvCt;
 
         }
 
         public static string DecryptStringFromBytes_Aes(byte[] cipherTextCombined, byte[] Key)
         {
-
-            // Declare the string used to hold 
-            // the decrypted text. 
             string plaintext = null;
 
-            // Create an Aes object 
-            // with the specified key and IV. 
             using (Aes aesAlg = Aes.Create())
             {
                 aesAlg.Key = Key;
@@ -72,10 +64,8 @@ namespace KeyVaultTest1.Helpers
 
                 aesAlg.Mode = CipherMode.CBC;
 
-                // Create a decrytor to perform the stream transform.
                 ICryptoTransform decryptor = aesAlg.CreateDecryptor(aesAlg.Key, aesAlg.IV);
-
-                // Create the streams used for decryption. 
+ 
                 using (var msDecrypt = new MemoryStream(cipherText))
                 {
                     using (var csDecrypt = new CryptoStream(msDecrypt, decryptor, CryptoStreamMode.Read))
@@ -89,7 +79,6 @@ namespace KeyVaultTest1.Helpers
                         }
                     }
                 }
-
             }
             return plaintext;
         }

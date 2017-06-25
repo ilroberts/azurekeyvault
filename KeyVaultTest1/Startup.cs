@@ -19,13 +19,6 @@ namespace KeyVaultTest1
                 .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
                 .AddEnvironmentVariables();
 
-            var config = builder.Build();
-
-            builder.AddAzureKeyVault(
-            $"https://{config["Vault"]}.vault.azure.net/",
-            config["ClientId"],
-            config["ClientSecret"]);
-
             Configuration = builder.Build();
         }
 
