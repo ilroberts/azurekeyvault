@@ -9,6 +9,8 @@ using KeyVaultTest1.Helpers;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Azure.KeyVault;
 using Microsoft.IdentityModel.Clients.ActiveDirectory;
+using StackExchange.Redis;
+using Microsoft.AspNetCore.Server.Kestrel.Internal.Http;
 
 namespace KeyVaultTest1.Controllers
 {
@@ -27,8 +29,8 @@ namespace KeyVaultTest1.Controllers
             Configuration = configuration;
             vh = new VaultHelper(Configuration["VaultURL"], Configuration["ClientId"], Configuration["ClientSecret"]);
 
-            var secret = vh.GetSecret("myFirstSecret");
-            secret.Wait();
+            //var secret = vh.GetSecret("myFirstSecret");
+            //secret.Wait();
         }
 
         // GET api/values
@@ -53,6 +55,20 @@ namespace KeyVaultTest1.Controllers
             {
                 using (var random = new RNGCryptoServiceProvider())
                 {
+
+                    // store the retrieved value in redis
+
+                    var redisKey = Configuration["RedisKey"];
+                    var redisUrl = Configuration["RedisURL"];
+                    ConnectionMultiplexer connection = ConnectionMultiplexer.Connect(string.Format("{0},abortConnect=false,ssl=true,password={1}",redisUrl,redisKey));
+
+                    IDatabase cache = connection.GetDatabase();
+
+                    // Perform cache operations using the cache object...
+                    // Simple put of integral data types into the cache
+                    cache.StringSet("receivedValue", dataDto.data);
+                   
+
                     var key = new byte[16];
                     random.GetBytes(key);
                     byte[] result = Encryption.EncryptStringToBytes_Aes(dataDto.data, key);
